@@ -1,7 +1,7 @@
 import ReviewsDAO from "../dao/reviewsDAO.js"
 
 export default class ReviewsController {
-  // 1. አዲስ Review ለመጻፍ (POST)
+
   static async apiPostReview(req, res, next) {
     try {
       const movieId = req.body.movieId
@@ -19,10 +19,10 @@ export default class ReviewsController {
     }
   }
 
-  // 2. የአንድን ፊልም Reviews በሙሉ በ Movie ID ለማውጣት (GET)
+
   static async apiGetReviews(req, res, next) {
     try {
-      let id = req.params.id || {}
+      let id = req.params.id || req.params.movieId
       let reviews = await ReviewsDAO.getReviewsByMovieId(id)
 
       if (!reviews) {
@@ -42,10 +42,10 @@ export default class ReviewsController {
     }
   }
 
-  // 3. አንድን Review በራሱ ObjectId ለመውሰድ (GET)
+
   static async apiGetReview(req, res, next) {
     try {
-      let id = req.params.id || {}
+      let id = req.params.id
       let review = await ReviewsDAO.getReview(id)
       if (!review) {
         res.status(404).json({ error: "Not found" })
@@ -62,7 +62,7 @@ export default class ReviewsController {
     }
   }
 
-  // 4. Review ለማስተካከል (PUT)
+
   static async apiUpdateReview(req, res, next) {
     try {
       const reviewId = req.params.id
@@ -91,7 +91,7 @@ export default class ReviewsController {
     }
   }
 
-  // 5. Review ለማጥፋት (DELETE)
+
   static async apiDeleteReview(req, res, next) {
     try {
       const reviewId = req.params.id

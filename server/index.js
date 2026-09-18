@@ -3,50 +3,38 @@ import mongodb from "mongodb"
 import ReviewsDAO from "./dao/reviewsDAO.js"
 import dotenv from "dotenv"
 
+
 dotenv.config()
 
 const MongoClient = mongodb.MongoClient
-const mongo_username = process.env.MONGO_USERNAME
-const mongo_password = process.env.MONGO_PASSWORD
+const mongo_username = process.env['MONGO_USERNAME']
+const mongo_password = process.env['MONGO_PASSWORD']
+
 
 const uri = `mongodb+srv://${mongo_username}:${mongo_password}@cluster0.iaaqbxv.mongodb.net/?appName=Cluster0`
 
-// 1. የ MongoDB connection በካሽ (cache) ለመያዝ
-let cachedClient = null
+const port = process.env.PORT || 8000
 
-async function connectDB() {
-  if (cachedClient) {
-    return cachedClient
-  }
 
-  const client = await MongoClient.connect(uri, {
+MongoClient.connect(
+  uri,
+  {
     maxPoolSize: 50,
     wtimeoutMS: 2500,
-  })
 
-  await ReviewsDAO.injectDB(client)
-  cachedClient = client
-  return cachedClient
-}
-
-// 2. እያንዳንዱ request ከመሄዱ በፊት Database መገናኘቱን ያረጋግጣል
-app.use(async (req, res, next) => {
-  try {
-    await connectDB()
-    next()
-  } catch (err) {
-    console.error("MongoDB Connection Error:", err)
-    res.status(500).json({ error: "Database connection failure" })
   }
-})
-
-// 3. ለ Local Testing (በኮምፒውተርህ ላይ ብቻ እንዲሰራ)
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 8000
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`)
+)
+  .catch(err => {
+    console.error(err.stack)
+    process.exit(1)
   })
-}
+  .then(async client => {
 
-// 4. ለ Vercel Serverless Deployment አስፈላጊው export
-export default app
+
+    await ReviewsDAO.injectDB(client)
+
+
+    app.listen(port, () => {
+      console.log(`listening on port ${port}`)
+    })
+  })
