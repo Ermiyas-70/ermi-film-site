@@ -1,4 +1,4 @@
-import ReviewsDAO from "../dao/reviewsDAO.jS"
+import ReviewsDAO from "../dao/reviewsDAO.js"
 
 export default class ReviewsController {
   // 1. አዲስ Review ለመጻፍ (POST)
